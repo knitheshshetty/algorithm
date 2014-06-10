@@ -7,8 +7,8 @@ class InsertionSort
 	public:
 		void operator()(std::vector<int>& inputStore)
 		{
-			int key{0}, j{0};
-			for (int i = 1; i < inputStore.size(); ++i)
+			int key{0}, j{0}, storeSize = inputStore.size();
+			for (int i = 1; i < storeSize; ++i)
 			{
 				key = std::move(inputStore[i]);
 				j = i - 1;
