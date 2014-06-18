@@ -7,7 +7,7 @@
 
 typedef std::vector<int> INPUT_STORE;
 	
-void merge(INPUT_STORE& inputStore, int& counter, const int startIndex, const int midIndex, const int endIndex)
+int merge(INPUT_STORE& inputStore,  const int startIndex, const int midIndex, const int endIndex)
 {
 	INPUT_STORE firstStore;
 	for (int i=startIndex; i<=midIndex; ++i)
@@ -22,30 +22,18 @@ void merge(INPUT_STORE& inputStore, int& counter, const int startIndex, const in
 	}
 
 	int firstStoreSize = firstStore.size(), secondStoreSize = secondStore.size();
-	for(int i = 0, j = 0; i < firstStoreSize && j < secondStoreSize;)
-	{
-		if (firstStore[i] > secondStore[j])
-		{
-			counter += (firstStoreSize - i);
-			++j;
-		}
-		else
-		{
-			++i;
-		}
-	}
-	
-	int i{0}, j{0};
+	int i{0}, j{0}, counter{0};
 	for (int k=startIndex; k<=endIndex; ++k)	
 	{
 		if ((i < firstStoreSize) && (j < secondStoreSize)) 
 		{
-			if (firstStore[i] < secondStore[j])
+			if (firstStore[i] <= secondStore[j])
 			{
 				inputStore[k] = firstStore[i++];
 			}
 			else
 			{
+				counter += (firstStoreSize - i);
 				inputStore[k] = secondStore[j++];
 			}
 		}
@@ -58,17 +46,22 @@ void merge(INPUT_STORE& inputStore, int& counter, const int startIndex, const in
 			inputStore[k] = secondStore[j++];
 		}		
 	}
+
+	return counter;
 }
 
-void mergeSort(INPUT_STORE& inputStore, int& counter, const int startIndex, const int endIndex)
+int mergeSort(INPUT_STORE& inputStore, const int startIndex, const int endIndex)
 {
+	int counter{0};
 	if (startIndex < endIndex)
 	{
 		int midIndex = (startIndex + endIndex)/2;
-		mergeSort(inputStore, counter, startIndex, midIndex);
-		mergeSort(inputStore, counter, midIndex + 1, endIndex);
-		merge(inputStore, counter, startIndex, midIndex, endIndex);
+		counter += mergeSort(inputStore, startIndex, midIndex);
+		counter += mergeSort(inputStore, midIndex + 1, endIndex);
+		counter += merge(inputStore, startIndex, midIndex, endIndex);
 	}
+	
+	return counter;
 }
 
 int main()
@@ -86,8 +79,8 @@ int main()
 	}
 		
 	
-	int inputStoreSize = inputStore.size(), inversionCounter{0};
-	mergeSort(inputStore, inversionCounter, 0, inputStoreSize - 1);
+	int inputStoreSize = inputStore.size();
+	int inversionCounter = mergeSort(inputStore, 0, inputStoreSize - 1);
 	for (auto val : inputStore)
 	{
 		std::cout << val << std::endl;
